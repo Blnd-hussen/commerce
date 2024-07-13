@@ -1,0 +1,38 @@
+{% extends 'auctions/layout.html' %}
+
+{% block title %}
+  category 
+{% endblock title %}
+
+{% block body %}
+  <h2>
+    Category: <span class="text-muted mb-3">{{ category }}</span>
+  </h2>
+  <section id="active-listings">
+    {% for auction in auctions %}
+      {% if auction.status == "open" %}
+        <div class="card" >
+        <img src="{{ auction.item.image_url }}" class="card-img-top" alt="{{ auction.item.title }}">
+        <div class="username">
+          {% if request.user == auction.user %}
+            Listed by you
+          {% else %}
+            Listed by {{auction.user.username}}
+          {% endif %}
+        </div>
+          <div class="card-body">
+            <h5 class="card-title">
+              <a href="{% url 'listingPage' auction.id %}">{{ auction.item.title }}</a>
+            </h5>
+            <p class="card-text">{{ auction.item.description }}</p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              Starting bid <span class="text-success">${{ auction.starting_bid }}</span>
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </section>
+{% endblock body %}

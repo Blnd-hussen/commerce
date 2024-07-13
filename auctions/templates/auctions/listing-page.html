@@ -1,0 +1,170 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}Listing page{% endblock title %}
+
+{% block body %}
+  <section class="listing-page">
+
+    <div class="listing-page__auction">
+      <div class="listing-page__auction-detail">
+        <h2>{{ auction.item.title }}</h2>
+        <p>{{ auction.item.description }}</p>
+        <ul>
+          <li>
+            Listed by:
+            <span class="text-primary">
+              {% if request.user == auction.user%} 
+                You
+              {% else %}  
+                {{ auction.user.username }}
+              {% endif %}
+            </span>
+          </li>
+          <li>
+            Starting bid: 
+            <span class="text-success">${{ auction.starting_bid}}</span>
+          </li>
+          <li>
+            {% if auction.status == "open" %}
+              Current bid:
+            {% else %}
+              Closing bid: 
+            {% endif %}
+            <span class="text-success">
+              {% if highest_bid %}
+                ${{ highest_bid.amount }}
+              {% else %}
+                $0 
+              {% endif %}
+            </span>
+          </li>
+          <li>
+            Status: <span
+              class="
+              {% if auction.status == "open"%} 
+                text-success 
+              {% else %} 
+                text-danger 
+              {% endif %}"
+            >{{ auction.status }}</span>
+          </li>
+          <li>
+            Category: <a href="{% url 'category' auction.item.category %}">{{ auction.item.category }}</a>  
+          </li>
+          {% if auction.status == "open" %}
+              <li>
+                Watchlist: 
+                {% if item_in_watchlist %}
+                  <a class="text-danger" href="{% url 'removeFromWatchlist' auction.id %}">
+                    Remove from Watchlist?
+                  </a>
+                {% else %}
+                  <a href="{% url 'addToWatchlist' auction.id %}">
+                    Add to Watchlist?
+                  </a>
+                {% endif %}
+              </li>
+          {% endif %}
+          <li>Number of bids: {{ number_of_bids }}</li>
+          <li>Created: {{ auction.created }}</li>
+        </ul>
+      </div>
+  
+      <div class="listing-page__auction-image">
+        <img src="{{ auction.item.image_url }}" alt="{{ auction.item.title }}">
+      </div>
+    </div>
+
+    {% if auction.status == "open" and request.user != auction.user %}
+      <div class="listing-page__bid-form">
+        <form action="{% url 'placeBid' auction.id %}" method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="bid-input">Bid on item</label>
+            <input step="0.01" min="0.00" name="bid_amount" type="number" class="form-control" id="bid-input" aria-describedby="bid-info" placeholder="Enter amount">
+            <small id="bid-info" class="form-text text-muted">
+              {% if not highest_bid %}
+                Your bid must be larger than or equal to ${{ auction.starting_bid }}
+              {% else %}
+                Your bid must be larger than ${{ highest_bid.amount }}
+              {% endif %}
+            </small>
+
+            {% if current_users_bid %}
+              <br>
+              <small id="bid-info" class="form-text text-muted">
+                Your last bid was ${{ current_users_bid.amount }}
+              </small>
+            {% endif %}
+            
+            {% if highest_bid and current_users_bid.amount == highest_bid.amount %}
+              <small id="bid-info" class="form-text text-muted">
+                Your bid is the current.
+              </small>
+            {% endif %}
+          </div>
+          
+          <button class="btn btn-success mt-3">Submit</button>
+        </form>
+      </div>
+    {% endif %}
+
+
+    {% if auction.status == "open" and request.user == auction.user %}
+      <div class="listing-page__bid-form">
+        <form action="{% url 'closeAuction' auction.id %}" method="post">
+          {% csrf_token %}
+          {% if not highest_bid %}
+            <p>There are no bids yet.</p>
+            <button name="action" value="close" class="btn btn-danger">Delete Auction</button>
+          {% else %}
+            <p>
+              The highest bid is <span class="text-success">${{ highest_bid.amount }}</span> by {{ highest_bid.bidder }}
+            </p>
+            <button name="action" value="close" class="btn btn-danger">Close Auction</button>
+            <button name="action" value="sell" class="btn btn-primary">Close and Sell to highest bidder</button>
+          {% endif %}
+
+        </form>
+      </div>
+    {% endif %}
+
+
+
+    <div class="chat">
+      {% if auction.status == "open" %}    
+        <section class="chat__form-container">
+          <form action="{% url 'addComment' auction.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="comment-box" class="mb-2">Comment</label>
+              <input name="comment" type="text" class="form-control" id="comment-box" aria-describedby="emailHelp" placeholder="lorem ipsum dollar...">
+              <small id="emailHelp" class="form-text text-muted">leave a comment on this auction.</small>
+            </div>
+            <button class="btn btn-primary mt-3">Post comment</button>
+          </form>
+        </section>
+      {% endif %}
+
+      <hr>
+      <h4>comments</h4>
+      <section class="chat__comments">
+        {% for comment in auction.comments.all %}
+          <article class="comment">
+            <header>
+              {% if comment.user == auction.user %}
+                Creator
+              {% else %}
+                {{ comment.user }}
+              {% endif %}
+            </header>
+            <div>{{ comment.body }}</div>
+            <footer>{{ comment.created }}</footer>
+          </article>
+          {% empty %}
+          be the first to add a comment
+        {% endfor %}
+      </section>
+    </div>
+  </section>
+{% endblock body %}

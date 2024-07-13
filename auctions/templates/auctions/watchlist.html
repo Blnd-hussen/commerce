@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}{% endblock title %}
+
+{% block body %}
+  <h1>Watchlist</h1>
+  <section class="watchlist-section">
+    {% for auction in watchlist %}
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'listingPage' auction.id %}">
+              {{ auction.item.title }}
+            </a>  
+          </h5>
+          <p class="card-text">{{ auction.item.description }}</p>
+          <a class="text-danger text-decoration-none" href="{% url 'removeFromWatchlist' auction.id %}">Remove from watchlist</a>
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+  {% if not watchlist %}
+    <h3 class="text-muted text-center" style="margin-top: 13rem">Your Watchlist is empty</h2>
+  {% endif %}
+{% endblock body %}
