@@ -62,7 +62,10 @@ def create_listing(request: HttpRequest):
         if image_url == "":
             image_url = "https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
 
-        category_object = Category.objects.get_or_create(name=category)[0]
+        if category:
+            category_object = Category.objects.get_or_create(name=category)[0]
+        else:
+            category_object = None
 
         item = Item(
             title=title,
@@ -189,10 +192,9 @@ def place_bid(request: HttpRequest, auction_id: int):
 
     try:
         bid_amount = float(bid_amount)
-    except Exception: 
+    except Exception:
         messages.error(request, "Invalid Bid")
         return redirect("listingPage", auction_id=auction_id)
-
 
     validate = validate_bid(bid_amount, auction_id)
     if not validate["success"]:

@@ -49,7 +49,12 @@
             >{{ auction.status }}</span>
           </li>
           <li>
-            Category: <a href="{% url 'category' auction.item.category %}">{{ auction.item.category }}</a>  
+            Category:
+            {% if auction.item.category and auction.item.category.name %}
+                <a href="{% url 'category' auction.item.category.name %}">{{ auction.item.category }}</a>
+            {% else %}
+                None
+            {% endif %}
           </li>
           {% if auction.status == "open" %}
               <li>
@@ -138,7 +143,7 @@
             {% csrf_token %}
             <div class="form-group">
               <label for="comment-box" class="mb-2">Comment</label>
-              <input name="comment" type="text" class="form-control" id="comment-box" aria-describedby="emailHelp" placeholder="lorem ipsum dollar...">
+              <input name="comment" type="text" class="form-control" id="comment-box" aria-describedby="emailHelp" placeholder="Join the discussion...">
               <small id="emailHelp" class="form-text text-muted">leave a comment on this auction.</small>
             </div>
             <button class="btn btn-primary mt-3">Post comment</button>
@@ -147,7 +152,7 @@
       {% endif %}
 
       <hr>
-      <h4>comments</h4>
+      <h4>Discussion</h4>
       <section class="chat__comments">
         {% for comment in auction.comments.all %}
           <article class="comment">
