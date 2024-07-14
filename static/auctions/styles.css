@@ -201,6 +201,7 @@ header {
 
   .card {
     margin: 0 auto;
+    min-width: 100%;
 
     .username {
       position: absolute;
@@ -214,7 +215,7 @@ header {
     img {
       max-height: 250px;
       min-height: 250px;
-      object-fit: cover;
+      object-fit: contain;
     }
 
     li {

@@ -11,7 +11,7 @@ from .utils import *
 
 
 def index(request: HttpRequest):
-    auctions = Auction.objects.all()
+    auctions = Auction.objects.all().order_by('-created')
 
     for auction in auctions:
         if auction.bids.exists():
