@@ -18,11 +18,11 @@ def validate_bid(bid_amount: int, auction_id) -> dict:
     auction = Auction.objects.get(pk=auction_id)
 
     if auction.bids.exists():
-        highest_bid = auction.bids.order_by('-amount').first().amount
+        highest_bid = float(auction.bids.order_by("-amount").first().amount)
     else:
         highest_bid = 0
 
-    if bid_amount <= highest_bid:
+    if highest_bid > 0 and bid_amount <= highest_bid:
         return {
             "body": "Your bid must be at least larger than the current bid",
             "success": False,

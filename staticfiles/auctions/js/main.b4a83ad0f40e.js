@@ -3,11 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (window.innerWidth >= 1000) {
     navMenuEl.classList.remove("hidden");
-  } else {
-    navMenuEl.classList.add("hidden");
   }
 
   window.addEventListener("resize", () => {
+    console.log(window.innerWidth);
     if (window.innerWidth >= 1000) {
       navMenuEl.classList.remove("hidden");
     } else {

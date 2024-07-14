@@ -126,7 +126,7 @@
             <p>
               The highest bid is <span class="text-success">${{ highest_bid.amount }}</span> by {{ highest_bid.bidder }}
             </p>
-            <button name="action" value="close" class="btn btn-danger">Close Auction</button>
+            <button name="action" value="close" class="btn btn-danger">Delete Auction</button>
             <button name="action" value="sell" class="btn btn-primary">Close and Sell to highest bidder</button>
           {% endif %}
 
@@ -158,7 +158,9 @@
           <article class="comment">
             <header>
               {% if comment.user == auction.user %}
-                Creator
+                <span class="text-primary">Creator</span>
+              {% elif request.user == comment.user %}
+                {{ comment.user }}<small class="text-muted">&nbsp; commented by you.</small>
               {% else %}
                 {{ comment.user }}
               {% endif %}
@@ -167,7 +169,11 @@
             <footer>{{ comment.created }}</footer>
           </article>
           {% empty %}
-          be the first to add a comment
+            {% if auction.status == "open" %}
+              be the first to add a comment
+            {% else %}
+              discussion is closed.
+            {% endif %}
         {% endfor %}
       </section>
     </div>

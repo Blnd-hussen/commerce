@@ -7,9 +7,14 @@
 
   <ol class="categories-list">
     {% for category in categories %}
-      <li>
-        <a href="{% url 'category' category.name %}">{{ category.name }}</a>
-      </li>
+      {% if category.name %}
+        <li>
+          <a href="{% url 'category' category.name %}">{{ category.name }}</a>
+        </li>
+      {% endif %}
+
+      {% empty%}
+        No categories at the moment
     {% endfor %}
   </ol>
 {% endblock body %}

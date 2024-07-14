@@ -36,13 +36,12 @@ def closed_auctions(request):
     for auction in closed_auctions:
         if auction.bids.exists():
             highest_bid = auction.bids.order_by("-amount").first().amount
-        else:
-            highest_bid = 0
+            auction.highest_bid = highest_bid
 
     return render(
         request,
         "auctions/closed-auctions.html",
-        {"closed_auctions": closed_auctions, "highest_bid": highest_bid},
+        {"closed_auctions": closed_auctions},
     )
 
 
